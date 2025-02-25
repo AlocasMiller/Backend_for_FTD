@@ -3,6 +3,7 @@ package ru.bezdar.skip.app
 import io.ktor.server.application.Application
 import io.ktor.server.netty.EngineMain
 import ru.bezdar.skip.app.plugin.configureCors
+import ru.bezdar.skip.app.plugin.configureFlyway
 import ru.bezdar.skip.app.plugin.configureKoin
 import ru.bezdar.skip.app.plugin.configureMonitoring
 import ru.bezdar.skip.app.plugin.configureRouting
@@ -15,6 +16,7 @@ fun main(args: Array<String>) = EngineMain.main(args)
 fun Application.module() {
     configureCors()
     configureKoin()
+    configureFlyway()
     configureMonitoring()
     configureRouting()
     configureSerialization()
