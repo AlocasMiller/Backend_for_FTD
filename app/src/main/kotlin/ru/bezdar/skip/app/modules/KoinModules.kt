@@ -7,5 +7,8 @@ object KoinModules {
         coroutineModule,
         databaseModule,
         datasourceModule,
+        useCaseModule,
+        controllerModule,
+        authModule,
     )
 }

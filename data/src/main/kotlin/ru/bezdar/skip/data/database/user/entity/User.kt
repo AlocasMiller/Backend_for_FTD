@@ -18,10 +18,10 @@ object UserTable : UUIDTable("users") {
 
 class UserEntity(id: EntityID<UUID>) : UUIDEntity(id) {
 
-    val name by UserTable.name
-    val login by UserTable.login
-    val password by UserTable.password
-    val role by UserTable.role
+    var name by UserTable.name
+    var login by UserTable.login
+    var password by UserTable.password
+    var role by UserTable.role
 
     companion object : UUIDEntityClass<UserEntity>(UserTable)
 }

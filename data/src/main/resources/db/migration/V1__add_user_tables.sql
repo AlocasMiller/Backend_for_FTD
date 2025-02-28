@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
   name        VARCHAR(30)  NOT NULL,
   login       VARCHAR(30)  NOT NULL,
   password    VARCHAR(255) NOT NULL,
-  role        VARCHAR(20)  NOT NULL,
+  role        VARCHAR(20)  NOT NULL DEFAULT 'STUDENT',
 
   CHECK (role in ('STUDENT', 'TEACHER', 'DEAN', 'ADMIN'))
 );

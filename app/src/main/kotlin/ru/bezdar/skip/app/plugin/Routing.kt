@@ -5,13 +5,18 @@ import io.ktor.server.application.install
 import io.ktor.server.resources.Resources
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import ru.bezdar.skip.app.api.group.configureGroupRouting
+import ru.bezdar.skip.app.api.request.configureRequestRouting
 
 fun Application.configureRouting() {
-    install(Resources)
+    install(Resources) {
+        serializersModule = SerializationConfig.serializersModule
+    }
 
     routing {
-        route("mobile") {
-
+        route("api") {
+            configureRequestRouting()
+            configureGroupRouting()
         }
     }
 }
