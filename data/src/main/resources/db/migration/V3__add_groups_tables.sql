@@ -4,8 +4,7 @@ CREATE TABLE IF NOT EXISTS groups (
 );
 
 CREATE TABLE IF NOT EXISTS group_students (
-    student_id         UUID NOT NULL REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    group_id        UUID NOT NULL REFERENCES groups (id) ON UPDATE CASCADE ON DELETE CASCADE,
-
-    PRIMARY KEY (student_id, group_id)
+    id              UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+    student_id      UUID NOT NULL REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE,
+    group_id        UUID NOT NULL REFERENCES groups (id) ON UPDATE CASCADE ON DELETE CASCADE
 );

@@ -5,6 +5,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ru.bezdar.skip.domain.group.usecase.CreateGroupUseCase
 import ru.bezdar.skip.domain.group.usecase.CreateGroupUseCaseImpl
+import ru.bezdar.skip.domain.group.usecase.GetGroupUseCase
+import ru.bezdar.skip.domain.group.usecase.GetGroupUseCaseImpl
 import ru.bezdar.skip.domain.request.usecase.CreateRequestUseCase
 import ru.bezdar.skip.domain.request.usecase.CreateRequestUseCaseImpl
 import ru.bezdar.skip.domain.request.usecase.GetRequestsUseCase
@@ -22,6 +24,7 @@ val useCaseModule = module {
     // region Group
 
     factoryOf(::CreateGroupUseCaseImpl) bind CreateGroupUseCase::class
+    factoryOf(::GetGroupUseCaseImpl) bind GetGroupUseCase::class
 
     // endregion
 }

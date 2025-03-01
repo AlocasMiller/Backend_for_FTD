@@ -20,9 +20,7 @@ fun Route.configureRequestRouting() {
 
     authenticate(AuthConstants.ACCESS_JWT_NAME) {
         getWithVersion<RequestRoute.Requests>(ApiVersion.V1) {
-            val userId = call.getAuthorizedUserId()
-
-            val requests = controller.getRequests(userId)
+            val requests = controller.getRequests()
             call.respondSuccess(requests)
         }
 

@@ -7,5 +7,5 @@ sealed class GroupRoute {
 
     @Serializable
     @Resource("/groups")
-    data object Groups : GroupRoute()
+    object Groups : GroupRoute()
 }

@@ -24,6 +24,10 @@ class GroupDbDataSourceImpl(override val database: Database) : GroupDbDataSource
         groupEntity.toDomain()
     }
 
+    override suspend fun getGroups(): List<Group> = dbQuery {
+        GroupEntity.all().map { it.toDomain() }
+    }
+
     private fun addStudents(group: GroupEntity, students: List<Id<User>>) {
         val toAdd = students.map { UserEntity.findById(it.value) ?: throw UserNotFound() }
         group.students = SizedCollection(group.students + toAdd)
