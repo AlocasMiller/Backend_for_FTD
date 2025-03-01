@@ -7,6 +7,7 @@ import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import ru.bezdar.skip.app.api.group.configureGroupRouting
 import ru.bezdar.skip.app.api.request.configureRequestRouting
+import ru.bezdar.skip.app.api.user.configureUserRouting
 
 fun Application.configureRouting() {
     install(Resources) {
@@ -17,6 +18,7 @@ fun Application.configureRouting() {
         route("api") {
             configureRequestRouting()
             configureGroupRouting()
+            configureUserRouting()
         }
     }
 }
