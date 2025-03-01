@@ -13,7 +13,7 @@ import java.util.UUID
 
 object GroupTable : UUIDTable("groups") {
 
-    val number = integer("number")
+    val number = integer("number").uniqueIndex()
 }
 
 class GroupEntity(id: EntityID<UUID>) : UUIDEntity(id) {

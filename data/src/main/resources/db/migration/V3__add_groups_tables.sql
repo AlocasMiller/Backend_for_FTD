@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS groups (
     id              UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-    number          INTEGER NOT NULL
+    number          INTEGER NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS group_students (
