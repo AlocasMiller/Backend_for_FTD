@@ -5,7 +5,7 @@ import ru.bezdar.skip.domain.request.RequestDbDataSource
 import ru.bezdar.skip.domain.request.model.Request
 import ru.bezdar.skip.domain.request.model.params.NewRequest
 
-interface CreateRequestUseCase: UseCase<NewRequest, Request>
+interface CreateRequestUseCase : UseCase<NewRequest, Request>
 
 class CreateRequestUseCaseImpl(
     private val requestDbDataSource: RequestDbDataSource,

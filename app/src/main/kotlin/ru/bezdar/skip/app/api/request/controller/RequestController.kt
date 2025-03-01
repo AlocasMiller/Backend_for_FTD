@@ -1,24 +1,65 @@
 package ru.bezdar.skip.app.api.request.controller
 
 import ru.bezdar.skip.app.api.common.model.IdDto
+import ru.bezdar.skip.app.api.common.model.toDomain
 import ru.bezdar.skip.app.api.request.model.body.CreateRequestBody
+import ru.bezdar.skip.app.api.request.model.body.UpdateRequestBody
 import ru.bezdar.skip.app.api.request.model.body.toDomain
+import ru.bezdar.skip.app.api.request.model.response.FileResponse
 import ru.bezdar.skip.app.api.request.model.response.RequestResponse
 import ru.bezdar.skip.app.api.request.model.response.toResponse
+import ru.bezdar.skip.domain.request.model.params.UpdateRequest
 import ru.bezdar.skip.domain.request.usecase.CreateRequestUseCase
+import ru.bezdar.skip.domain.request.usecase.GetUserRequestUseCase
+import ru.bezdar.skip.domain.request.usecase.GetExportUseCase
 import ru.bezdar.skip.domain.request.usecase.GetRequestsUseCase
+import ru.bezdar.skip.domain.request.usecase.GetUserExportUseCase
+import ru.bezdar.skip.domain.request.usecase.UpdateRequestUseCase
+import ru.bezdar.skip.domain.user.model.User
+import kotlin.getOrThrow
 
 class RequestController (
-    private val createRequestsUseCase: CreateRequestUseCase,
+    private val createRequestUseCase: CreateRequestUseCase,
+    private val getExportUseCase: GetExportUseCase,
     private val getRequestsUseCase: GetRequestsUseCase,
-) {
+    private val getUserExportUseCase: GetUserExportUseCase,
+    private val getUserRequestUseCase: GetUserRequestUseCase,
+    private val updateRequestUseCase: UpdateRequestUseCase,
+    ) {
 
     suspend fun createRequest(userId: IdDto, body: CreateRequestBody): RequestResponse {
         val param = body.toDomain(userId)
-        return createRequestsUseCase(param).getOrThrow().toResponse()
+        return createRequestUseCase(param).getOrThrow().toResponse()
     }
 
     suspend fun getRequests(): List<RequestResponse> {
         return getRequestsUseCase(Unit).getOrThrow().map { it.toResponse() }
+    }
+
+    suspend fun getExports(): List<FileResponse> {
+         return getExportUseCase(Unit).getOrThrow().map { it.toResponse() }
+    }
+
+    suspend fun getUserRequests(userId: IdDto): List<RequestResponse> {
+        return getUserRequestUseCase(userId.toDomain<User>()).getOrThrow().map { it.toResponse() }
+    }
+
+    suspend fun getUserExport(userId: IdDto): List<FileResponse> {
+        return getUserExportUseCase(userId.toDomain<User>()).getOrThrow().map { it.toResponse() }
+    }
+
+    suspend fun updateRequest(requestId: IdDto, moderatorId: IdDto, body: UpdateRequestBody): RequestResponse {
+        val params = UpdateRequest(
+            id = requestId.toDomain(),
+            creatorId = body.creatorId.toDomain(),
+            moderatorId = moderatorId.toDomain(),
+            dateStart = body.dateStart,
+            dateEnd = body.dateEnd,
+            comment = body.comment,
+            status = body.status,
+            reason = body.reason,
+            fileInDean = body.fileInDean,
+        )
+        return updateRequestUseCase(params).getOrThrow().toResponse()
     }
 }

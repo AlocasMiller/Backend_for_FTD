@@ -7,10 +7,12 @@ import org.koin.ktor.ext.inject
 import ru.bezdar.skip.app.api.common.auth.AuthConstants
 import ru.bezdar.skip.app.api.request.controller.RequestController
 import ru.bezdar.skip.app.api.request.model.body.CreateRequestBody
+import ru.bezdar.skip.app.api.request.model.body.UpdateRequestBody
 import ru.bezdar.skip.app.common.ApiVersion
 import ru.bezdar.skip.app.common.extentions.getAuthorizedUserId
 import ru.bezdar.skip.app.common.extentions.getWithVersion
 import ru.bezdar.skip.app.common.extentions.postWithVersion
+import ru.bezdar.skip.app.common.extentions.putWithVersion
 import ru.bezdar.skip.app.common.extentions.receiveAndValidate
 import ru.bezdar.skip.app.common.extentions.respondCreated
 import ru.bezdar.skip.app.common.extentions.respondSuccess
@@ -30,6 +32,26 @@ fun Route.configureRequestRouting() {
 
             val request = controller.createRequest(userId, body)
             call.respondCreated(request)
+        }
+
+        getWithVersion<RequestRoute.RequestsExport>(ApiVersion.V1) {
+            TODO("Not yet implemented")
+        }
+
+        getWithVersion<RequestRoute.Request>(ApiVersion.V1) { params ->
+            TODO("Not yet implemented")
+        }
+
+        getWithVersion<RequestRoute.RequestExport>(ApiVersion.V1) { params ->
+            TODO("Not yet implemented")
+        }
+
+        putWithVersion<RequestRoute.RequestUpdate>(ApiVersion.V1) { params ->
+            val moderatorId = call.getAuthorizedUserId()
+            val body = call.receiveAndValidate<UpdateRequestBody>()
+            
+            val request = controller.updateRequest(params.requestId, moderatorId, body)
+            call.respondSuccess(request)
         }
     }
 }
