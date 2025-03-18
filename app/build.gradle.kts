@@ -45,3 +45,11 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
 }
+
+tasks.jar {
+    manifest {
+        attributes(
+            "Main-Class" to "ru.bezdar.skip.app.Application"
+        )
+    }
+}
