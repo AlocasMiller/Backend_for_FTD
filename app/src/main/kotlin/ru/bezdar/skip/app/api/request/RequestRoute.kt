@@ -11,6 +11,10 @@ sealed class RequestRoute {
     data object Requests : RequestRoute()
 
     @Serializable
+    @Resource("/requests/upload/{requestId}")
+    class RequestUpload(val requestId: IdDto) : RequestRoute()
+
+    @Serializable
     @Resource("/requests/export")
     object RequestsExport : RequestRoute()
 

@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS requests (
 CREATE TABLE IF NOT EXISTS files (
     id              UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     request_id      UUID NOT NULL,
+    file_name       VARCHAR(255) NOT NULL,
     file_data       BYTEA NOT NULL,
 
     FOREIGN KEY (request_id) REFERENCES requests (id)

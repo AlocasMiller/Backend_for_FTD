@@ -14,6 +14,7 @@ abstract class NotFoundError : ApplicationError()
 class UserNotFound(override val message: String = "User with such id not found") : NotFoundError()
 class GroupNotFound(override val message: String? = "Group with such id not found") : NotFoundError()
 class RequestNotFound(override val message: String? = "Request with such id not found") : NotFoundError()
+class FilesNotFound(override val message: String? = "Files with APPROVED not found") : NotFoundError()
 
 abstract class BadRequestError : ApplicationError()
 

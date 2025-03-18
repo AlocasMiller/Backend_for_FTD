@@ -24,7 +24,6 @@ data class CreateRequestBody(
     val status: RequestStatus,
     val reason: RequestReason,
     val fileInDean: Boolean,
-    val files: List<ByteArray>,
 ) : Validated<CreateRequestBody> {
     override val validationRule: Validation<CreateRequestBody> = Validation {
         CreateRequestBody::comment ifPresent {
@@ -35,12 +34,11 @@ data class CreateRequestBody(
 }
 
 fun CreateRequestBody.toDomain(userId: IdDto) = NewRequest(
-    creatorId = userId.toDomain<User>().value,
+    creatorId = userId.toDomain<User>(),
     dateStart = dateStart,
     dateEnd = dateEnd,
     comment = comment,
     status = status,
     reason = reason,
     fileInDean = fileInDean,
-    files = files,
 )

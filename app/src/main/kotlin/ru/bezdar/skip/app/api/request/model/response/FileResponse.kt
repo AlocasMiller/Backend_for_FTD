@@ -8,10 +8,8 @@ import ru.bezdar.skip.domain.request.file.model.File
 @Serializable
 data class FileResponse(
     val id: IdDto,
-    val fileData: ByteArray,
 )
 
 fun File.toResponse() = FileResponse(
     id = id.toResponse(),
-    fileData = fileData,
 )

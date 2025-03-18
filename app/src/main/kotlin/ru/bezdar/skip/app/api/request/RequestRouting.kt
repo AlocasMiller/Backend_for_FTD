@@ -1,7 +1,13 @@
 package ru.bezdar.skip.app.api.request
 
+import io.ktor.http.ContentDisposition
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
+import io.ktor.server.request.receiveMultipart
+import io.ktor.server.response.header
+import io.ktor.server.response.respondBytes
 import io.ktor.server.routing.Route
 import org.koin.ktor.ext.inject
 import ru.bezdar.skip.app.api.common.auth.AuthConstants
@@ -34,8 +40,26 @@ fun Route.configureRequestRouting() {
             call.respondCreated(request)
         }
 
+        postWithVersion<RequestRoute.RequestUpload>(ApiVersion.V1) { params ->
+            val responses = controller.uploadFile(params.requestId, call.receiveMultipart())
+            call.respondSuccess(responses)
+        }
+
         getWithVersion<RequestRoute.RequestsExport>(ApiVersion.V1) {
-            TODO("Not yet implemented")
+            val response = controller.getExports()
+
+            call.response.header(
+                HttpHeaders.ContentDisposition,
+                ContentDisposition.Attachment.withParameter(
+                    ContentDisposition.Parameters.FileName,
+                    "files.zip"
+                ).toString()
+            )
+
+            call.respondBytes(
+                response.zip,
+                contentType = ContentType.Application.Zip,
+            )
         }
 
         getWithVersion<RequestRoute.Request>(ApiVersion.V1) { params ->

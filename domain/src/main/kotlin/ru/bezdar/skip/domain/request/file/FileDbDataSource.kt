@@ -10,4 +10,5 @@ interface FileDbDataSource {
     suspend fun addFile(file: NewFile): File
 
     suspend fun getFiles(requestId: Id<Request>): List<File>
+    suspend fun getAllFiles(): List<File>
 }

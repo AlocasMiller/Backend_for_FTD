@@ -1,0 +1,762 @@
+openapi: 3.0.3
+info:
+  title: Skip API
+  description: 'Актуализировано: 10 марта 2025' 
+  version: '0.0.4'
+servers:
+  - url: '/api'
+
+paths:
+  /auth/register:
+    post:
+      description: 'Доступно деканату и суперадмину'
+      summary: 'Регистрация пользователя'
+      tags:
+        - 'Авторизация'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                login:
+                  type: string
+                name:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                role:
+                  $ref: '#/components/schemas/Role'
+              required:
+                - login
+                - name
+                - password
+      responses:
+        '200':
+          description: 'Пользователь успешно зарегестрирован'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/login:
+    post:
+      summary: 'Авторизация пользователя'
+      tags:
+        - 'Авторизация'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                login:
+                  type: string
+                password:
+                  type: string
+                  format: password
+              required:
+                - login
+                - password
+      responses:
+        '200':
+          description: 'Пользователь успешно авторизован'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/request:
+    get:
+      parameters:
+        - in: query
+          name: dataStart
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: dataEnd
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: name
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/Status'
+        - in: query
+          name: reason
+          schema:
+            $ref: '#/components/schemas/Reason'
+        - in: query
+          name: groupNumber
+          schema:
+            type: integer
+
+      description: 'Если fileInDean true, то файл прикреплять необязателно. В обратно случае - обязательно'
+      summary: 'Получение всех заявок'
+      tags:
+       - 'Заявки'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 'Заявки'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    creatorId:
+                      type: string
+                      format: uuid
+                    moderatorId:
+                      type: string
+                      format: uuid
+                    dateStart:
+                      type: string
+                      format: date
+                    dateEnd:
+                      type: string
+                      format: date
+                    comment:
+                      type: string
+                    status:
+                      $ref: '#/components/schemas/Status'
+                    reason:
+                      $ref: '#/components/schemas/Reason'
+                    fileInDean:
+                      type: boolean
+                    fileUrl:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - id
+                    - creatorId
+                    - moderatorId
+                    - dateStart
+                    - dateEnd
+                    - status
+                    - reason
+                    - fileInDean
+                    - fileUrl
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      description: Если создает деканат/админ, то используется userId, для которого создается
+      summary: 'Создание заявки на пропуск'
+      tags: 
+       - 'Заявки'
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+                dateStart:
+                  type: string
+                  format: date
+                dateEnd:
+                  type: string
+                  format: date
+                comment:
+                  type: string
+                status:
+                  $ref: '#/components/schemas/Status'
+                reason:
+                  $ref: '#/components/schemas/Reason'
+                fileInDean:
+                      type: boolean
+                fileUrl:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - dateStart
+                - dateEnd
+                - status
+                - reason
+      responses:
+        '204':
+          description: 'Заявка на пропуск создана успешно'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/request/upload/{requestId}:
+    parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      summary: 'Загрузка файлов для заявки'
+      tags:
+       - 'Заявки'
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  file:
+                    type: string
+                    format: binary
+      responses:
+        '204':
+          description: 'Файл загружен успешно'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/request/export:
+    parameters:
+      - in: query
+        name: dataStart
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: dataEnd
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: name
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          $ref: '#/components/schemas/Status'
+      - in: query
+        name: reason
+        schema:
+          $ref: '#/components/schemas/Reason'
+      - in: query
+        name: groupNumber
+        schema:
+          type: integer
+
+    get:
+      description: 'Экспортируются только утверженные заявки'
+      summary: 'Получение всех заявок для экспорта'
+      tags:
+       - 'Заявки'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 'Заявки'
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  zip:
+                    type: string
+                    format: binary
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/request/{userId}:
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: dataStart
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: dataEnd
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: status
+        schema:
+          $ref: '#/components/schemas/Status'
+
+    get:
+      description: 'Доступно деканату и суперадмину'
+      summary: 'Получение заявок пользователя'
+      tags:
+       - 'Заявки'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 'Заявки'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    creatorId:
+                      type: string
+                      format: uuid
+                    moderatorId:
+                      type: string
+                      format: uuid
+                    dateStart:
+                      type: string
+                      format: date
+                    dateEnd:
+                      type: string
+                      format: date
+                    comment:
+                      type: string
+                    status:
+                      $ref: '#/components/schemas/Status'
+                    reason:
+                      $ref: '#/components/schemas/Reason'
+                    fileInDean:
+                      type: boolean
+                    fileUrl:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - id
+                    - creatorId
+                    - moderatorId
+                    - dateStart
+                    - dateEnd
+                    - status
+                    - reason
+                    - fileInDean
+                    - fileUrl
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/request/{userId}/export:
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: dataStart
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: dataEnd
+        schema:
+          type: string
+          format: date
+
+    get:
+      description: 'Доступно деканату и суперадмину. Экспортируются только утверженные заявки'
+      summary: 'Получение заявок пользователя для экспорта'
+      tags:
+       - 'Заявки'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 'Заявки'
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  zip:
+                    type: string
+                    format: binary
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/request/{requestId}:
+    parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    patch:
+      description: 'Только деканату и суперадмину доступно изменение статуса'
+      summary: 'Изменение статуса заявки'
+      tags: 
+       - 'Заявки'
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                dateStart:
+                  type: string
+                  format: date
+                dateEnd:
+                  type: string
+                  format: date
+                comment:
+                  type: string
+                status:
+                  $ref: '#/components/schemas/Status'
+                reason:
+                  $ref: '#/components/schemas/Reason'
+                fileInDean:
+                  type: boolean
+      responses:
+        '204':
+          description: 'Статус заявки на пропуск успешно изменен'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/users:
+    get:
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+        - in: query
+          name: groupNumber
+          schema:
+            type: integer
+        - in: query
+          name: role
+          schema:
+            $ref: '#/components/schemas/Role'
+
+      summary: 'Получение пользователей'
+      tags:
+       - 'Пользователи'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 'Пользователи'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    role:
+                      $ref: '#/components/schemas/Role'
+                    login:
+                      type: string
+                    name:
+                      type: string
+                  required:
+                    - id
+                    - role
+                    - login
+                    - name
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/users/{userId}:
+    patch:
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+            format: UUID
+      
+      summary: 'Редактирование роли пользователя'
+      tags:
+        - 'Пользователи'
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                role:
+                  $ref: '#/components/schemas/Role'
+              required:
+                - role
+      responses:
+        '204':
+          description: 'Роль пользователя успешно изменена'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/groups:
+    get:
+      summary: 'Получение групп'
+      tags:
+       - 'Группы'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 'Группы'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    number:
+                      type: integer
+                    students:
+                      type: array
+                      items:
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                          role:
+                            $ref: '#/components/schemas/Role'
+                          login:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - role
+                          - login
+                          - name
+                  required:
+                    - id
+                    - number
+                    - students
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: 'Создание группы'
+      tags:
+       - 'Группы'
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                number:
+                  type: integer
+                students:
+                  type: array
+                  items:
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                    required:
+                      - id
+              required:
+                - number
+                - students
+      responses:
+        '204':
+          description: 'Группа создана успешно'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      description: 'Авторизация при помощи access-токена'
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+    refreshAuth:
+      description: 'Авторизация при помощи refresh-токена'
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+          nullable: true
+      required:
+        - code
+
+    AuthToken:
+      properties:
+        accessToken:
+          type: string
+        accessTokenExpiresIn:
+          type: string
+      required:
+        - accessToken
+        - accessTokenExpiresIn
+
+    Status:
+      type: string
+      enum:
+        - PENDING
+        - APPROVED
+        - DECLINDE
+
+    Reason:
+      type: string
+      enum:
+        - FAMILY
+        - ILLNESS
+        - STUDY_ACTIVITY
+
+    Role:
+      type: string
+      enum:
+        - STUDENT
+        - ADMIN
+        - DEAN
+        - TEACHER
+
+  responses:
+    InternalServerError:
+      description: 'Internal Server Error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'InternalServerError'
+            message: 'Something went wrong'
+
+    BadRequestError:
+      description: 'Bad Request Error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'InvalidToken'
+            message: 'Provided invalid refresh token'
+
+    NotFoundError:
+      description: 'Not Found Error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'NotFoundError'
+            message: 'User not found'
+
+    ForbiddenError:
+      description: 'Action is forbidden'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'ForbiddenError'
+            message: "User can't do this action"
+
+    UnauthorizedError:
+      description: 'Access token is missing or invalid'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'UnauthorizedError'
+            message: 'User not authorized'

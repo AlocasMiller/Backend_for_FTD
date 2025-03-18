@@ -19,7 +19,7 @@ class RequestDbDataSourceImpl(override val database: Database) : RequestDbDataSo
 
     override suspend fun addRequest(request: NewRequest): Request = dbQuery {
         val requestEntity = RequestEntity.new {
-            creator = UserEntity.findById(request.creatorId) ?: throw UserNotFound()
+            creator = UserEntity.findById(request.creatorId.value) ?: throw UserNotFound()
             createdAt = Instant.now()
             dateStart = request.dateStart
             dateEnd = request.dateEnd

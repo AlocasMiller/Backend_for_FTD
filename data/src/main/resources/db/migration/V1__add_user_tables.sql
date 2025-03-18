@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS tokens (
+   id          UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
    user_id     UUID            NOT NULL,
    token       VARCHAR(255)    NOT NULL,
    expire_at   TIMESTAMP       NOT NULL,

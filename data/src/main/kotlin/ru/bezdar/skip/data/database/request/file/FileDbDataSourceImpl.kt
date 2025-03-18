@@ -3,6 +3,8 @@ package ru.bezdar.skip.data.database.request.file
 import org.jetbrains.exposed.sql.Database
 import ru.bezdar.skip.data.database.common.DatabaseDataSourse
 import ru.bezdar.skip.data.database.request.entity.RequestEntity
+import ru.bezdar.skip.data.database.request.entity.RequestStatusDb
+import ru.bezdar.skip.data.database.request.entity.RequestTable
 import ru.bezdar.skip.data.database.request.file.entity.FileEntity
 import ru.bezdar.skip.data.database.request.file.entity.FileTable
 import ru.bezdar.skip.data.database.request.file.entity.toDomain
@@ -16,7 +18,8 @@ import ru.bezdar.skip.domain.request.model.Request
 class FileDbDataSourceImpl(override val database: Database) : FileDbDataSource, DatabaseDataSourse {
     override suspend fun addFile(file: NewFile): File = dbQuery {
         val fileEntity = FileEntity.new {
-            request = RequestEntity.findById(file.requestId) ?: throw RequestNotFound()
+            request = RequestEntity.findById(file.requestId.value) ?: throw RequestNotFound()
+            fileName = file.fileName
             fileData = file.fileData
         }
 
@@ -25,5 +28,10 @@ class FileDbDataSourceImpl(override val database: Database) : FileDbDataSource, 
 
     override suspend fun getFiles(requestId: Id<Request>): List<File> = dbQuery {
         FileEntity.find { FileTable.requestId eq requestId.value }.map(FileEntity::toDomain)
+    }
+
+    override suspend fun getAllFiles(): List<File> = dbQuery {
+        val requests = RequestEntity.find { RequestTable.status eq RequestStatusDb.APPROVED }
+        FileEntity.find { FileTable.requestId inList requests.map { it.id } }.map(FileEntity::toDomain)
     }
 }
