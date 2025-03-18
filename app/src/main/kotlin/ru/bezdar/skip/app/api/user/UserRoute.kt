@@ -11,6 +11,10 @@ sealed class UserRoute {
     object Users : UserRoute()
 
     @Serializable
+    @Resource("/users/me")
+    object Myself : UserRoute()
+
+    @Serializable
     @Resource("/users/{userId}")
     class User(val userId: IdDto) : UserRoute()
 }

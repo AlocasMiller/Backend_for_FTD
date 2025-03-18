@@ -21,6 +21,8 @@ import ru.bezdar.skip.domain.request.usecase.UpdateRequestUseCase
 import ru.bezdar.skip.domain.request.usecase.UpdateRequestUseCaseImpl
 import ru.bezdar.skip.domain.request.usecase.UploadFileUseCase
 import ru.bezdar.skip.domain.request.usecase.UploadFileUseCaseImpl
+import ru.bezdar.skip.domain.user.usecase.GetMyselfUseCase
+import ru.bezdar.skip.domain.user.usecase.GetMyselfUseCaseImpl
 import ru.bezdar.skip.domain.user.usecase.UpdateUserRoleUseCase
 import ru.bezdar.skip.domain.user.usecase.UpdateUserRoleUseCaseImpl
 import ru.bezdar.skip.domain.user.usecase.GetUserUseCase
@@ -46,5 +48,6 @@ val useCaseModule = module {
     // region User
     factoryOf(::GetUserUseCaseImpl) bind GetUserUseCase::class
     factoryOf(::UpdateUserRoleUseCaseImpl) bind UpdateUserRoleUseCase::class
+    factoryOf(::GetMyselfUseCaseImpl) bind GetMyselfUseCase::class
     // endregion
 }

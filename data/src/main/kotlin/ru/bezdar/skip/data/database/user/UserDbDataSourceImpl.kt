@@ -6,13 +6,19 @@ import ru.bezdar.skip.data.database.user.entity.UserEntity
 import ru.bezdar.skip.data.database.user.entity.toDb
 import ru.bezdar.skip.data.database.user.entity.toDomain
 import ru.bezdar.skip.domain.common.error.UserNotFound
+import ru.bezdar.skip.domain.common.model.Id
 import ru.bezdar.skip.domain.user.UserDbDataSource
 import ru.bezdar.skip.domain.user.model.User
 import ru.bezdar.skip.domain.user.model.params.UpdateRole
 
 class UserDbDataSourceImpl(override val database: Database) : UserDbDataSource, DatabaseDataSourse {
+
     override suspend fun getUsers(): List<User> = dbQuery {
         UserEntity.all().map { it.toDomain() }
+    }
+
+    override suspend fun getMyself(userId: Id<User>): User = dbQuery {
+        UserEntity.findById(userId.value)!!.toDomain()
     }
 
     override suspend fun updateUser(params: UpdateRole): User = dbQuery {

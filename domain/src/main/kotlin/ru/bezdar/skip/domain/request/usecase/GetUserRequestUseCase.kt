@@ -1,5 +1,6 @@
 package ru.bezdar.skip.domain.request.usecase
 
+import ru.bezdar.skip.domain.common.error.RequestNotFound
 import ru.bezdar.skip.domain.common.model.Id
 import ru.bezdar.skip.domain.common.usecase.UseCase
 import ru.bezdar.skip.domain.request.RequestDbDataSource
@@ -13,6 +14,12 @@ class GetUserRequestUseCaseImpl(
 ) : GetUserRequestUseCase {
 
     override suspend fun execute(param: Id<User>): List<Request> {
-        TODO("Not yet implemented")
+        val requests = requestsDbDataSource.getRequestByUserId(param)
+
+        if (requests.isNotEmpty()) {
+            return requests
+        } else {
+            throw RequestNotFound()
+        }
     }
 }

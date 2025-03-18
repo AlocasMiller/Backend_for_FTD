@@ -3,6 +3,7 @@ package ru.bezdar.skip.data.database.request
 import org.jetbrains.exposed.sql.Database
 import ru.bezdar.skip.data.database.common.DatabaseDataSourse
 import ru.bezdar.skip.data.database.request.entity.RequestEntity
+import ru.bezdar.skip.data.database.request.entity.RequestTable
 import ru.bezdar.skip.data.database.request.entity.toDb
 import ru.bezdar.skip.data.database.request.entity.toDomain
 import ru.bezdar.skip.data.database.user.entity.UserEntity
@@ -13,6 +14,7 @@ import ru.bezdar.skip.domain.request.RequestDbDataSource
 import ru.bezdar.skip.domain.request.model.Request
 import ru.bezdar.skip.domain.request.model.params.NewRequest
 import ru.bezdar.skip.domain.request.model.params.UpdateRequest
+import ru.bezdar.skip.domain.user.model.User
 import java.time.Instant
 
 class RequestDbDataSourceImpl(override val database: Database) : RequestDbDataSource, DatabaseDataSourse {
@@ -38,6 +40,10 @@ class RequestDbDataSourceImpl(override val database: Database) : RequestDbDataSo
 
     override suspend fun getRequestById(id: Id<Request>): Request? = dbQuery {
         RequestEntity.findById(id.value)?.toDomain()
+    }
+
+    override suspend fun getRequestByUserId(userId: Id<User>): List<Request>  = dbQuery {
+        RequestEntity.find { RequestTable.creatorId eq userId.value }.map { it.toDomain() }
     }
 
     override suspend fun updateRequest(params: UpdateRequest): Request = dbQuery {

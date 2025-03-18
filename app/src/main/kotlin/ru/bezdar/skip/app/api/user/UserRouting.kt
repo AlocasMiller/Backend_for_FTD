@@ -9,6 +9,7 @@ import ru.bezdar.skip.app.api.common.auth.AuthConstants
 import ru.bezdar.skip.app.api.user.controller.UserController
 import ru.bezdar.skip.app.api.user.model.body.UpdateRoleBody
 import ru.bezdar.skip.app.common.ApiVersion
+import ru.bezdar.skip.app.common.extentions.getAuthorizedUserId
 import ru.bezdar.skip.app.common.extentions.getWithVersion
 import ru.bezdar.skip.app.common.extentions.patchWithVersion
 import ru.bezdar.skip.app.common.extentions.respondSuccess
@@ -20,6 +21,12 @@ fun Route.configureUserRouting() {
         getWithVersion<UserRoute.Users>(ApiVersion.V1) {
             val users = controller.getUsers()
             call.respondSuccess(users)
+        }
+
+        getWithVersion<UserRoute.Myself>(ApiVersion.V1) {
+            val userId = call.getAuthorizedUserId()
+            val user = controller.getMyself(userId)
+            call.respondSuccess(user)
         }
 
         patchWithVersion<UserRoute.User>(ApiVersion.V1) { params ->

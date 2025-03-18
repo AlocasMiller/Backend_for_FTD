@@ -19,11 +19,11 @@ sealed class RequestRoute {
     object RequestsExport : RequestRoute()
 
     @Serializable
-    @Resource("/requests/{userId}")
+    @Resource("/requests/users/{userId}")
     class Request(val userId: IdDto) : RequestRoute()
 
     @Serializable
-    @Resource("/requests/{userId}/export")
+    @Resource("/requests/users/export/{userId}")
     class RequestExport(val userId: IdDto) : RequestRoute()
 
     @Serializable

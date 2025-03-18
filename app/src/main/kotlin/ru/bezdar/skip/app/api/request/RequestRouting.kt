@@ -63,11 +63,25 @@ fun Route.configureRequestRouting() {
         }
 
         getWithVersion<RequestRoute.Request>(ApiVersion.V1) { params ->
-            TODO("Not yet implemented")
+            val response = controller.getUserRequests(params.userId)
+            call.respondSuccess(response)
         }
 
         getWithVersion<RequestRoute.RequestExport>(ApiVersion.V1) { params ->
-            TODO("Not yet implemented")
+            val response = controller.getUserExport(params.userId)
+
+            call.response.header(
+                HttpHeaders.ContentDisposition,
+                ContentDisposition.Attachment.withParameter(
+                    ContentDisposition.Parameters.FileName,
+                    "files.zip"
+                ).toString()
+            )
+
+            call.respondBytes(
+                response.zip,
+                contentType = ContentType.Application.Zip,
+            )
         }
 
         putWithVersion<RequestRoute.RequestUpdate>(ApiVersion.V1) { params ->
