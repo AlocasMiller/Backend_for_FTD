@@ -19,10 +19,6 @@ fun Application.configureAuth() {
         baseJwt(name = AuthConstants.ACCESS_JWT_NAME, verifier = tokenValidator.accessTokenVerifier) { payload ->
             tokenValidator.getUserIdFromPayload(payload)
         }
-
-        baseJwt(name = AuthConstants.REFRESH_JWT_NAME, verifier = tokenValidator.refreshTokenVerifier) { payload ->
-            tokenValidator.getUserIdFromPayload(payload)
-        }
     }
 }
 

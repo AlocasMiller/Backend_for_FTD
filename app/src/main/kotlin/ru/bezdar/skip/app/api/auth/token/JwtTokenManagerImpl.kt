@@ -17,39 +17,27 @@ import java.util.Date
 
 class JwtTokenManagerImpl(private val config: JwtConfig) : TokenManager, TokenValidator {
     private val accessTokenAlgorithm = Algorithm.HMAC256(config.accessTokenSecret.toByteArray())
-    private val refreshTokenAlgorithm = Algorithm.HMAC256(config.refreshTokenSecret.toByteArray())
 
     override val accessTokenVerifier: JWTVerifier = JWT.require(accessTokenAlgorithm).build()
-    override val refreshTokenVerifier: JWTVerifier = JWT.require(refreshTokenAlgorithm).build()
 
     override fun calculateTokenExpiresIn(validityTime: Long): Instant =
         Instant.now().plusSeconds(validityTime)
 
     override fun generateNewTokenPair(userId: Id<User>): TokenPair {
         val accessTokenExpiresIn = calculateTokenExpiresIn(config.accessTokenValidity)
-        val refreshTokenExpiresIn = calculateTokenExpiresIn(config.refreshTokenValidity)
 
         val accessToken = Token(
             token = generateAccessToken(userId, accessTokenExpiresIn),
             expireAt = accessTokenExpiresIn
         )
-        val refreshToken = Token(
-            token = generateRefreshToken(userId, refreshTokenExpiresIn),
-            expireAt = refreshTokenExpiresIn
-        )
 
-        return TokenPair(accessToken, refreshToken)
+        return TokenPair(accessToken)
     }
 
     private fun generateAccessToken(userId: Id<User>, expiresIn: Instant): String = JWT.create()
         .withClaim(KEY_CLAIM_USER, userId.value.toString())
         .withExpiresAt(Date.from(expiresIn))
         .sign(accessTokenAlgorithm)
-
-    private fun generateRefreshToken(userId: Id<User>, expiresIn: Instant): String = JWT.create()
-        .withClaim(KEY_CLAIM_USER, userId.value.toString())
-        .withExpiresAt(Date.from(expiresIn))
-        .sign(refreshTokenAlgorithm)
 
     override fun getUserIdFromPayload(payload: Payload): IdDto? =
         payload.claims?.get(KEY_CLAIM_USER)?.asString()?.toUUIDOrNull()?.let { IdDto(it) }

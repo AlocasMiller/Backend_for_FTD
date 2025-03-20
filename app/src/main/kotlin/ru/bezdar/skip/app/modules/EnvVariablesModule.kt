@@ -13,9 +13,7 @@ val envVariablesModule = module {
 
 private fun createJwtConfig(): JwtConfig = JwtConfig(
     accessTokenSecret = EnvVariablesReader.accessTokenSecret,
-    refreshTokenSecret = EnvVariablesReader.refreshTokenSecret,
     accessTokenValidity = EnvVariablesReader.accessTokenValidity,
-    refreshTokenValidity = EnvVariablesReader.refreshTokenValidity,
 )
 
 private fun createDatabaseConfig(): DatabaseConfig = DatabaseConfig(

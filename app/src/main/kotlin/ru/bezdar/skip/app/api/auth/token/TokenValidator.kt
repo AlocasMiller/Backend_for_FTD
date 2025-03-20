@@ -6,7 +6,6 @@ import ru.bezdar.skip.app.api.common.model.IdDto
 
 interface TokenValidator {
     val accessTokenVerifier: JWTVerifier
-    val refreshTokenVerifier: JWTVerifier
 
     fun getUserIdFromPayload(payload: Payload): IdDto?
 }
