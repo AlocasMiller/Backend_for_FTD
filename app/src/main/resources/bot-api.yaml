@@ -1,0 +1,434 @@
+openapi: 3.0.3
+info:
+  title: 'Bot Api'
+  description: 'Актуализировано: 30 июня'
+  version: '1.0.0'
+servers:
+  - url: '/api/v1'
+
+paths:
+  /users:
+    get:
+      summary: 'Получение студентов'
+      tags:
+        - 'Студенты'
+      responses:
+        '200':
+          description: 'Список студентов'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    telegramId:
+                      type: integer
+                    name:
+                      type: string
+                    phone:
+                      type: string
+                    rate:
+                      type: integer
+                    studyPlanId:
+                      type: string
+                      format: uuid
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: 'Добавление студента'
+      tags:
+        - 'Студенты'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                telegramId:
+                  type: integer
+                name:
+                  type: string
+                phone:
+                  type: string
+                rate:
+                  type: integer
+                studyPlanId:
+                  type: string
+                  format: uuid
+              required:
+                - telegramId
+                - name
+                - phone
+                - rate
+                - studyPlanId
+      responses:
+        '204':
+          description: 'Студент сохранен успешно'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/{userId}:
+    parameters:
+      - in: path
+        name: userId
+        schema:
+          type: string
+          format: uuid
+        required: true
+
+    get:
+      summary: 'Получение студента'
+      tags:
+        - 'Студенты'
+      responses:
+        '200':
+          description: 'Студент'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  telegramId:
+                    type: integer
+                  name:
+                    type: string
+                  phone:
+                    type: string
+                  rate:
+                    type: integer
+                  studyPlanId:
+                    type: string
+                    format: uuid
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      summary: 'Изменение студента'
+      tags:
+        - 'Студенты'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                telegramId:
+                  type: integer
+                name:
+                  type: string
+                phone:
+                  type: string
+                rate:
+                  type: integer
+                studyPlanId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: 'Студент изменен успешно'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  telegramId:
+                    type: integer
+                  name:
+                    type: string
+                  phone:
+                    type: string
+                  rate:
+                    type: integer
+                  studyPlanId:
+                    type: string
+                    format: uuid
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: 'Удаление студента'
+      tags:
+        - 'Студенты'
+      responses:
+        '204':
+          description: 'Студент удален успешно'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/tg/{telegramId}:
+    parameters:
+      - in: path
+        name: telegramId
+        schema:
+          type: integer
+        required: true
+
+    get:
+      summary: 'Получение информации о студенте'
+      tags:
+        - 'Студенты'
+      responses:
+        '200':
+          description: 'Студент'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  telegramId:
+                    type: integer
+                  name:
+                    type: string
+                  phone:
+                    type: string
+                  rate:
+                    type: integer
+                  studyPlanId:
+                    type: string
+                    format: uuid
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /lessons:
+    get:
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+
+      summary: 'Получение информации о занятиях по дате'
+      tags:
+        - 'Занятия'
+      responses:
+        '200':
+          description: 'Список занятий по дате'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    startTime:
+                      type: string
+                      format: date-time
+                    endTime:
+                      type: string
+                      format: date-time
+                    conferenceLink:
+                      type: string
+                    studentId:
+                      type: string
+                      format: uuid
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: 'Добавление занятия'
+      tags:
+        - 'Занятия'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                startTime:
+                  type: string
+                  format: date-time
+                endTime:
+                  type: string
+                  format: date-time
+                conferenceLink:
+                  type: string
+                studentId:
+                  type: string
+                  format: uuid
+              required:
+                - startTime
+                - endTime
+                - conferenceLink
+                - studentId
+      responses:
+        '204':
+          description: 'Занятие сохранен успешно'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /lessons/{lessonId}:
+    parameters:
+      - in: path
+        name: lessonId
+        schema:
+          type: string
+          format: uuid
+        required: true
+    get:
+      summary: 'Получение информации о занятии'
+      tags:
+        - 'Занятия'
+      responses:
+        '200':
+          description: 'Список занятий по дате'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  startTime:
+                    type: string
+                    format: date-time
+                  endTime:
+                    type: string
+                    format: date-time
+                  conferenceLink:
+                    type: string
+                  studentId:
+                    type: string
+                    format: uuid
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      summary: 'Изменение занятия'
+      tags:
+        - 'Занятия'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                startTime:
+                  type: string
+                  format: date-time
+                endTime:
+                  type: string
+                  format: date-time
+                conferenceLink:
+                  type: string
+                studentId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: 'Занятие изменено успешно'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  startTime:
+                    type: string
+                    format: date-time
+                  endTime:
+                    type: string
+                    format: date-time
+                  conferenceLink:
+                    type: string
+                  studentId:
+                    type: string
+                    format: uuid
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: 'Удаление занятия'
+      tags:
+        - 'Занятия'
+      responses:
+        '204':
+          description: 'Занятие удален успешно'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+          nullable: true
+      required:
+        - code
+
+  responses:
+    InternalServerError:
+      description: 'Internal Server Error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'InternalServerError'
+            message: 'Something went wrong'
+
+    BadRequestError:
+      description: 'Bad Request Error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'InvalidToken'
+            message: 'Provided invalid refresh token'
+
+
+    NotFoundError:
+      description: 'Not Found Error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'NotFoundError'
+            message: 'User not found'
+
+    ConflictError:
+      description: 'Conflict Error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

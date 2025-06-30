@@ -1,7 +1,7 @@
-import ru.bezdar.skip.plugin.deployment.DeploymentConfig
-import ru.bezdar.skip.plugin.deployment.IMAGE_BASE
-import ru.bezdar.skip.plugin.deployment.IMAGE_PORT
-import ru.bezdar.skip.plugin.deployment.isDev
+import ru.miller.bot.plugin.deployment.DeploymentConfig
+import ru.miller.bot.plugin.deployment.IMAGE_BASE
+import ru.miller.bot.plugin.deployment.IMAGE_PORT
+import ru.miller.bot.plugin.deployment.isDev
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {

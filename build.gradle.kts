@@ -7,7 +7,7 @@ plugins {
 }
 
 subprojects {
-    group = "ru.bezdar"
+    group = "ru.miller"
     version = "0.0.1"
 
     repositories {

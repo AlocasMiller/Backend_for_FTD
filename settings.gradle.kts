@@ -1,4 +1,4 @@
-rootProject.name = "skip-backend"
+rootProject.name = "bot-backend"
 
 pluginManagement {
     repositories {
